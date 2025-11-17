@@ -4,6 +4,73 @@ A directory of RSS feeds from the ShadCN UI community registries. Automatically 
 
 ## Getting Started
 
+## Adding RSS Feed to Your Registry
+
+To enable RSS feed tracking for your registry, you need to add an RSS feed endpoint. Here's how to do it using `@wandry/analytics-sdk`:
+
+### Step 1: Install the package
+
+```bash
+npm install @wandry/analytics-sdk
+```
+
+### Step 2: Create an RSS route
+
+Create a route handler in your Next.js app (e.g., `app/rss.xml/route.ts` or `app/feed.xml/route.ts`):
+
+```typescript
+import { generateRegistryRssFeed } from "@wandry/analytics-sdk";
+import type { NextRequest } from "next/server";
+
+export async function GET(request: NextRequest) {
+  const baseUrl = new URL(request.url).origin;
+
+  const rssXml = await generateRegistryRssFeed({
+    baseUrl,
+    rss: {
+      title: "Your Registry Name",
+      description: "Subscribe to Your Registry updates",
+      link: "https://your-registry-url.com",
+      pubDateStrategy: "githubLastEdit",
+    },
+    github: {
+      owner: "your-username",
+      repo: "your-repo",
+      token: process.env.GITHUB_TOKEN,
+    },
+  });
+
+  if (!rssXml) {
+    return new Response("RSS feed not available", {
+      status: 404,
+      headers: { "Content-Type": "text/plain" },
+    });
+  }
+
+  return new Response(rssXml, {
+    headers: {
+      "Content-Type": "application/rss+xml; charset=utf-8",
+      "Cache-Control":
+        "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+    },
+  });
+}
+```
+
+### Step 3: Configure environment variables
+
+Add your GitHub token to your `.env.local`:
+
+```env
+GITHUB_TOKEN=your_github_token_here
+```
+
+### Step 4: Deploy
+
+Once deployed, your RSS feed will be automatically discovered by ShadRSS at one of the supported paths (e.g., `/rss.xml` or `/feed.xml`).
+
+**Note**: Make sure your RSS feed is accessible at one of the paths listed in the [RSS Feed Paths](#rss-feed-paths) section above.
+
 ### Installation
 
 1. Clone the repository:
