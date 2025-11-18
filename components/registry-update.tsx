@@ -23,7 +23,7 @@ export const RegistryUpdate: React.FC<RegistryUpdateProps> = ({ registry }) => {
   return (
     <Dialog>
       <DialogTrigger>
-        <Badge className="bg-green-300 text-green-800 font-semibold cursor-pointer">
+        <Badge className="bg-green-300 text-green-800 font-semibold cursor-pointer py-1.5 px-3" suppressHydrationWarning>
           Updated on {registry.updatedAt?.toLocaleDateString()}
         </Badge>
       </DialogTrigger>

@@ -8,21 +8,23 @@ import {
 } from "./ui/dialog";
 import { Badge } from "./ui/badge";
 import { CodeBlock } from "./code-block";
+import { Button } from "./ui/button";
 
 export const WithoutRss: React.FC = () => {
   return (
     <Dialog>
-      <DialogTrigger>
-        <Badge className="bg-red-300 text-red-800 font-semibold cursor-pointer">
-          Without RSS feed
-        </Badge>
+      <DialogTrigger asChild>
+        <Button size="sm" variant="outline" className="py-1 text-xs font-semibold cursor-pointer"> 
+          Connect RSS feed
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] overflow-y-auto md:max-w-[60vw] md:w-[60vw] w-full">
         <DialogHeader>
           <DialogTitle>No RSS feed found</DialogTitle>
+          <p className="text-sm text-muted-foreground">Add a RSS feed to your registry to enable this feature.</p>
         </DialogHeader>
         <div className="mt-4 max-w-full overflow-x-auto">
-          <p>Add a RSS feed to your registry to enable this feature.</p>
+          <p className="mt-1">The RSS is refreshed once an hour, meaning your changes might not appear right away</p>
           <CodeBlock
             code="npm install @wandry/analytics-sdk"
             containerClassName="my-4"

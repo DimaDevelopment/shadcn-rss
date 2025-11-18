@@ -76,7 +76,7 @@ export const RegistriesList: React.FC<RegistriesListProps> = ({
                 className="*:[svg]:fill-foreground grayscale *:[svg]:size-8"
               />
               <ItemContent>
-                <ItemTitle>{registry.name}</ItemTitle>
+                <ItemTitle>{registry.name} {!registry.feed && <span className="text-xs text-red-600">Without RSS</span>}</ItemTitle>
                 {registry.description && (
                   <ItemDescription className="max-w-[70%] text-balance">
                     {registry.description}
