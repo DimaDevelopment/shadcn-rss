@@ -20,5 +20,5 @@ export const RSS_URLS = [
   "/registry/atom.xml",
 ];
 
-export const STILL_UPDATED_DAYS = 10;
+export const STILL_UPDATED_DAYS = 14;
 export const CACHE_TTL = 60 * 5; // 1 day

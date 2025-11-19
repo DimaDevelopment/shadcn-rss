@@ -9,7 +9,6 @@ import {
   STILL_UPDATED_DAYS,
 } from "./config";
 import { isWithinInterval, max, sub } from "date-fns";
-import { directories } from "./directory";
 
 const getRegistryRssUrl = async (baseUrl: string): Promise<string | null> => {
   for (const rssPath of RSS_URLS) {
@@ -136,18 +135,22 @@ const normalizeQuery = (query: string) =>
   query.toLowerCase().replaceAll(" ", "").replaceAll("@", "");
 
 export const getRegistries = async (): Promise<Registry[]> => {
-  return directories.map((dir) => ({
-    ...dir,
-    searchKeywords: [normalizeQuery(dir.name), normalizeQuery(dir.description)],
-  }));
+  try {
+    const res = await fetch(REGISTRIES_URL, {
+      next: { revalidate: CACHE_TTL },
+    });
+    if (!res.ok) throw new Error("Failed to fetch registries");
+    const registries = await res.json();
 
-  // TODO: Github send 404
-  // try {
-  //   const res = await fetch(REGISTRIES_URL);
-  //   if (!res.ok) throw new Error("Failed to fetch registries");
-  //   return await res.json();
-  // } catch (error) {
-  //   console.error("Failed to fetch registries, using mock data:", error);
-  //   return [];
-  // }
+    return registries.map((registry: Registry) => ({
+      ...registry,
+      searchKeywords: [
+        normalizeQuery(registry.name),
+        normalizeQuery(registry.description),
+      ],
+    }));
+  } catch (error) {
+    console.error("Failed to fetch registries, using mock data:", error);
+    return [];
+  }
 };
