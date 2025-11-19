@@ -2,7 +2,6 @@ import { AnimateIcon } from "@/components/animate-ui/icons/icon";
 import { Wifi } from "@/components/animate-ui/icons/wifi";
 import { RegistriesPageContent } from "@/components/registries-page-content";
 import { collectRssFeed } from "@/lib/data";
-import { Rss } from "lucide-react";
 
 export default async function Home() {
   const registries = await collectRssFeed();
@@ -15,7 +14,7 @@ export default async function Home() {
             <AnimateIcon animate loop>
               <Wifi />
             </AnimateIcon>
-            ShadRSS
+            shadcn/rss
           </h1>
           <p className="mt-2 text-md text-pretty text-muted-foreground">
             A directory of RSS feeds from the shadcn/ui community registries.

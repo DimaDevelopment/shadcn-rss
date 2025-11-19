@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ShadRSS",
+  title: "shadcn/rss",
   description:
     "A directory of RSS feeds from the ShadCN UI community registries.",
 };
