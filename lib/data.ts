@@ -1,4 +1,3 @@
-import { unstable_cache } from "next/cache";
 import { XMLParser } from "fast-xml-parser";
 
 import { Registry, RssFeed, RssItem } from "@/types";
@@ -42,6 +41,7 @@ const findAndFetchRssFeed = async (
     const response = await fetch(rssUrl, {
       // TODO: Fix caching issue
       // next: { revalidate: CACHE_TTL },
+      cache: "no-store",
       signal: AbortSignal.timeout(10000),
     });
 
@@ -82,12 +82,18 @@ const enrichRegistryWithRssData = async (
   registry: Registry
 ): Promise<Registry> => {
   const baseUrl = registry.homepage || registry.url;
+  const defaultRegistyData = {
+    hasFeed: false,
+    feed: null,
+    latestItems: [],
+    updatedAt: null,
+  };
 
-  if (!baseUrl) return registry;
+  if (!baseUrl) return { ...registry, ...defaultRegistyData };
 
   const rss = await findAndFetchRssFeed(baseUrl);
 
-  if (!rss) return registry;
+  if (!rss) return { ...registry, ...defaultRegistyData };
 
   const latestItems = findLatestRegistryItemUpdated(rss.rss?.channel?.item);
   const updatedAt = findRegistryUpdatedAt(latestItems);
