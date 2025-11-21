@@ -3,6 +3,7 @@ import { XMLParser } from "fast-xml-parser";
 import { Registry, RssFeed, RssItem } from "@/types";
 import {
   CACHE_TTL,
+  EXLUDED_RSS_URLS,
   REGISTRIES_URL,
   RSS_URLS,
   STILL_UPDATED_DAYS,
@@ -15,8 +16,16 @@ const getRegistryRssUrl = async (baseUrl: string): Promise<string[]> => {
     const rssPaths = (
       await Promise.all(
         RSS_URLS.map(async (rssPath) => {
+          const exludedRss = EXLUDED_RSS_URLS[baseUrl];
+
+          console.log(baseUrl, exludedRss);
+
+          if (exludedRss && exludedRss === rssPath) {
+            return null;
+          }
+
           const testUrl = new URL(rssPath, baseUrl).toString();
-          console.log("testUrl", testUrl);
+
           const response = await fetch(testUrl, {
             method: "HEAD",
             signal: AbortSignal.timeout(30000),
@@ -39,7 +48,6 @@ const findAndFetchRssFeed = async (
   const parser = new XMLParser();
 
   const rssUrls = await getRegistryRssUrl(baseUrl);
-  console.log("rssUrls", rssUrls);
 
   if (!rssUrls || rssUrls?.length === 0) return null;
 
