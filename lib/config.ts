@@ -14,9 +14,5 @@ export const RSS_URLS = [
   "/registry/feed.xml",
 ];
 
-export const EXLUDED_RSS_URLS = {
-  "https://chanhdai.com/components": "/rss",
-} as Record<string, string>;
-
 export const STILL_UPDATED_DAYS = 30;
 export const CACHE_TTL = 60 * 5; // 1 day

@@ -6,6 +6,8 @@ import { collectRssFeed } from "@/lib/data";
 export default async function Home() {
   const registries = await collectRssFeed();
 
+  console.log("registries", registries);
+
   return (
     <div className="flex min-h-screen items-center justify-center font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-start justify-start py-8 md:px-16 px-2 bg-white dark:bg-black sm:items-start">

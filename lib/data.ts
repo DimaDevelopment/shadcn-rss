@@ -3,43 +3,32 @@ import { XMLParser } from "fast-xml-parser";
 import { Registry, RssFeed, RssItem } from "@/types";
 import {
   CACHE_TTL,
-  EXLUDED_RSS_URLS,
   REGISTRIES_URL,
   RSS_URLS,
   STILL_UPDATED_DAYS,
 } from "./config";
 import { isWithinInterval, max, sub } from "date-fns";
-import { isRssOutput } from "./rss";
 
-const getRegistryRssUrl = async (baseUrl: string): Promise<string[]> => {
-  try {
-    const rssPaths = (
-      await Promise.all(
-        RSS_URLS.map(async (rssPath) => {
-          const exludedRss = EXLUDED_RSS_URLS[baseUrl];
+const getRegistryRssUrl = async (baseUrl: string): Promise<string | null> => {
+  for (const rssPath of RSS_URLS) {
+    try {
+      const testUrl = `${baseUrl.replace(/\/+$/, "")}/${rssPath.replace(
+        /^\/+/,
+        ""
+      )}`;
+      const response = await fetch(testUrl, {
+        method: "HEAD",
+        signal: AbortSignal.timeout(5000),
+      });
 
-          console.log(baseUrl, exludedRss);
-
-          if (exludedRss && exludedRss === rssPath) {
-            return null;
-          }
-
-          const testUrl = new URL(rssPath, baseUrl).toString();
-
-          const response = await fetch(testUrl, {
-            method: "HEAD",
-            signal: AbortSignal.timeout(30000),
-          });
-
-          return response.ok ? testUrl : null;
-        })
-      )
-    ).filter((url): url is string => Boolean(url));
-
-    return rssPaths;
-  } catch (e) {
-    return [];
+      if (response.ok) {
+        return testUrl;
+      }
+    } catch (error) {
+      continue;
+    }
   }
+  return null;
 };
 
 const findAndFetchRssFeed = async (
@@ -47,46 +36,24 @@ const findAndFetchRssFeed = async (
 ): Promise<RssFeed | null> => {
   const parser = new XMLParser();
 
-  const rssUrls = await getRegistryRssUrl(baseUrl);
+  const rssUrl = await getRegistryRssUrl(baseUrl);
 
-  if (!rssUrls || rssUrls?.length === 0) return null;
+  if (!rssUrl) return null;
 
-  const feeds = (
-    await Promise.all(
-      rssUrls.map(async (rssPath) => {
-        const response = await fetch(rssPath, {
-          // next: { revalidate: CACHE_TTL },
-          signal: AbortSignal.timeout(15000),
-        });
+  try {
+    const response = await fetch(rssUrl, {
+      next: { revalidate: CACHE_TTL },
+      signal: AbortSignal.timeout(15000),
+    });
 
-        if (!response.ok) {
-          return null;
-        }
+    if (!response.ok) {
+      return null;
+    }
 
-        const output = await response.text();
-
-        if (!isRssOutput(output)) {
-          return null;
-        }
-
-        return parser.parse(output) as RssFeed;
-      })
-    )
-  ).filter((feed): feed is RssFeed => feed !== null);
-
-  if (feeds.length === 0) {
+    return parser.parse(await response.text()) as RssFeed;
+  } catch (error) {
     return null;
   }
-
-  return {
-    rss: {
-      ...feeds[0].rss,
-      channel: {
-        ...feeds[0].rss.channel,
-        item: feeds.flatMap((feed) => feed.rss.channel.item || []),
-      },
-    },
-  };
 };
 
 const findLatestRegistryItemUpdated = (
