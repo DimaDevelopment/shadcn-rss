@@ -11,18 +11,64 @@ import { CodeBlock } from "./code-block";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
+import { Registry } from "@/types";
 
 interface WithoutRssProps {
   children?: React.ReactNode;
   title?: string;
   description?: string;
+  registry?: Registry;
 }
 
 export const WithoutRss: React.FC<WithoutRssProps> = ({
   children,
   title = "No RSS feed found",
   description = "Add a RSS feed to your registry to enable this feature.",
+  registry,
 }) => {
+  const githubDetails = { owner: "your-username", repo: "your-repo" };
+
+  const rssCode = `import { generateRegistryRssFeed } from "@wandry/analytics-sdk";
+import type { NextRequest } from "next/server";
+
+export const revalidate = 3600;
+
+export async function GET(request: NextRequest) {
+  const baseUrl = new URL(request.url).origin;
+
+  const rssXml = await generateRegistryRssFeed({
+    baseUrl,
+    rss: {
+      title: "${registry?.name || "Your Registry Name"}",
+      description: "Subscribe to ${registry?.name || "Your Registry"} updates",
+      link: "${
+        registry?.homepage || registry?.url || "https://your-registry.com"
+      }",
+      pubDateStrategy: "githubLastEdit",
+    },
+    github: {
+      owner: "${githubDetails.owner}",
+      repo: "${githubDetails.repo}",
+      token: process.env.GITHUB_TOKEN,
+    },
+  });
+
+  if (!rssXml) {
+    return new Response("RSS feed not available", {
+      status: 404,
+      headers: { "Content-Type": "text/plain" },
+    });
+  }
+
+  return new Response(rssXml, {
+    headers: {
+      "Content-Type": "application/rss+xml; charset=utf-8",
+      "Cache-Control":
+        "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+    },
+  });
+}`;
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -76,44 +122,7 @@ export const WithoutRss: React.FC<WithoutRssProps> = ({
                 and add the following code:
               </p>
               <CodeBlock
-                code={`import { generateRegistryRssFeed } from "@wandry/analytics-sdk";
-import type { NextRequest } from "next/server";
-
-export const revalidate = 3600;
-
-export async function GET(request: NextRequest) {
-  const baseUrl = new URL(request.url).origin;
-
-  const rssXml = await generateRegistryRssFeed({
-    baseUrl,
-    rss: {
-      title: "Wandry UI",
-      description: "Subscribe to Wandry UI updates",
-      link: "https://www.ui.wandry.com.ua",
-      pubDateStrategy: "githubLastEdit",
-    },
-    github: {
-      owner: "WandryDev",
-      repo: "wandry-ui",
-      token: process.env.GITHUB_TOKEN,
-    },
-  });
-
-  if (!rssXml) {
-    return new Response("RSS feed not available", {
-      status: 404,
-      headers: { "Content-Type": "text/plain" },
-    });
-  }
-
-  return new Response(rssXml, {
-    headers: {
-      "Content-Type": "application/rss+xml; charset=utf-8",
-      "Cache-Control":
-        "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
-    },
-  });
-}`}
+                code={rssCode}
                 filename="app/rss.xml/route.ts"
                 lang="typescript"
               />
@@ -129,7 +138,7 @@ export async function GET(request: NextRequest) {
             </div>
             <Button variant="secondary" size="sm" asChild>
               <Link
-                href="https://github.com/DimaDevelopment/shadcn-rss"
+                href="https://github.com/DimaDevelopment/shadcn-rss/issues/new"
                 target="_blank"
                 rel="noreferrer"
                 className="gap-2"

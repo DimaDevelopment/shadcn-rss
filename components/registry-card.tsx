@@ -79,7 +79,7 @@ export const RegistryCard: React.FC<RegistryCardProps> = ({
             {registry.hasFeed ? (
               <RegistryUpdate registry={registry} />
             ) : (
-              <WithoutRss />
+              <WithoutRss registry={registry} />
             )}
           </div>
 
