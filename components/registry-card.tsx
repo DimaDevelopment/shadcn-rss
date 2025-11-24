@@ -1,9 +1,10 @@
-import * as React from "react";
+import React from "react";
 import Link from "next/link";
-import { ExternalLink, Copy } from "lucide-react";
-import { toast } from "sonner";
+import { ExternalLink, Copy, Bookmark } from "lucide-react";
 
 import { Registry } from "@/types";
+import { cn } from "@/lib/utils";
+import { useRegistryCardActions } from "@/hooks/use-registry-card-actions";
 import {
   Card,
   CardContent,
@@ -13,26 +14,33 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+
 import { RegistryUpdate } from "./registry-update";
 import { WithoutRss } from "./without-rss";
 
 interface RegistryCardProps {
   registry: Registry;
+  isSelected?: boolean;
+  onToggle?: (registry: Registry) => void;
 }
 
-export const RegistryCard: React.FC<RegistryCardProps> = ({ registry }) => {
-  const handleCopyRss = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (registry.rssUrl) {
-      navigator.clipboard.writeText(registry.rssUrl);
-      toast.success("RSS link copied to clipboard");
-    }
-  };
+export const RegistryCard: React.FC<RegistryCardProps> = ({
+  registry,
+  isSelected,
+  onToggle,
+}) => {
+  const { handleCopyRss, handleToggle } = useRegistryCardActions(
+    registry,
+    onToggle
+  );
 
   return (
-    <Card className="flex flex-col h-full overflow-hidden hover:shadow-md transition-all hover:-translate-y-0.5 border-muted-foreground/10 gap-0 py-4">
+    <Card
+      className={cn(
+        "flex flex-col h-full overflow-hidden hover:shadow-md transition-all hover:-translate-y-0.5 border-muted-foreground/10 gap-0 py-4",
+        isSelected && "ring-1 ring-primary/50 border-primary/50"
+      )}
+    >
       <CardHeader className="flex flex-row items-center gap-3 space-y-0 px-4">
         <div
           className="size-8 shrink-0 rounded-md bg-muted/50 p-1.5 *:[svg]:size-full *:[svg]:fill-foreground grayscale"
@@ -44,6 +52,19 @@ export const RegistryCard: React.FC<RegistryCardProps> = ({ registry }) => {
             {registry.name}
           </CardTitle>
         </div>
+        {onToggle && (
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className={cn(
+              "h-8 w-8 rounded-full shrink-0 text-muted-foreground hover:text-foreground",
+              isSelected && "text-primary hover:text-primary"
+            )}
+            onClick={handleToggle}
+          >
+            <Bookmark className={cn("size-4", isSelected && "fill-current")} />
+          </Button>
+        )}
       </CardHeader>
       <CardContent className="flex-1 p-4 pt-1">
         {registry.description && (
@@ -66,7 +87,7 @@ export const RegistryCard: React.FC<RegistryCardProps> = ({ registry }) => {
             {registry.rssUrl && (
               <Button
                 variant="ghost"
-                size="icon-xs"
+                size="icon-sm"
                 className="h-7 w-7 text-muted-foreground hover:text-foreground"
                 onClick={handleCopyRss}
                 title="Copy RSS Link"

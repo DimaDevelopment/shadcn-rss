@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { highlightCode } from "@/lib/highlight";
 import { Button } from "./ui/button";
@@ -10,6 +12,7 @@ type CodeBlockProps = {
   containerClassName?: string;
   codeClassName?: string;
   hasCopyButton?: boolean;
+  filename?: string;
 };
 
 export const CodeBlock: React.FC<CodeBlockProps> = ({
@@ -18,6 +21,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
   containerClassName,
   codeClassName,
   hasCopyButton = true,
+  filename,
 }) => {
   const [isCopied, setIsCopied] = React.useState<boolean>(false);
   const [html, setHtml] = React.useState<string>("");
@@ -42,24 +46,40 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
   return (
     <div
       className={cn(
-        "relative w-full rounded-lg bg-muted text-sm px-4 py-2 pr-15",
+        "relative w-full rounded-lg bg-muted text-sm overflow-hidden",
         containerClassName
       )}
     >
-      <div
-        className={cn("not-prose w-full", codeClassName)}
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
-      {hasCopyButton && (
-        <Button
-          size="icon"
-          variant="ghost"
-          className="absolute top-1 right-0 z-10"
-          onClick={copyToClipboard}
-        >
-          {isCopied ? <CheckCheck /> : <Copy />}
-        </Button>
+      {filename && (
+        <div className="flex items-center justify-between px-4 py-2 bg-muted border-b border-border/50">
+          <span className="text-xs font-medium text-muted-foreground">
+            {filename}
+          </span>
+        </div>
       )}
+      <div className="relative">
+        <div
+          className={cn(
+            "not-prose w-full px-4 py-2 pr-15 overflow-x-auto",
+            codeClassName
+          )}
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+        {hasCopyButton && (
+          <Button
+            size="icon"
+            variant="ghost"
+            className="absolute top-1 right-1 z-10 h-6 w-6"
+            onClick={copyToClipboard}
+          >
+            {isCopied ? (
+              <CheckCheck className="h-3 w-3" />
+            ) : (
+              <Copy className="h-3 w-3" />
+            )}
+          </Button>
+        )}
+      </div>
     </div>
   );
 };
