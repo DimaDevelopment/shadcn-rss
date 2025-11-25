@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
 
 import { AnimateIcon } from "@/components/animate-ui/icons/icon";
 import { Wifi } from "@/components/animate-ui/icons/wifi";
 import { RegistriesPageContent } from "@/components/registries-page-content";
 import { Button } from "@/components/ui/button";
-import { WithoutRss } from "@/components/without-rss";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 import { collectRssFeed } from "@/lib/data";
@@ -29,10 +27,10 @@ export default async function Home() {
             <h1 className="text-3xl md:text-4xl font-bold leading-tight tracking-tighter text-pretty">
               shadcn/rss
             </h1>
-            <p className="text-muted-foreground max-w-[500px] text-balance leading-relaxed text-sm">
-              A community-driven directory of RSS feeds for shadcn/ui
-              registries. Stay updated with the latest components and changes.
-            </p>
+            <p
+              className="text-mA community-driven directory of RSS feeds for shadcn/ui
+              registries. Stay updated with the latest components and changes.uted-foreground max-w-[500px] text-balance leading-relaxed text-sm"
+            ></p>
           </div>
 
           <div className="flex items-center gap-3">
