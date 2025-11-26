@@ -4,7 +4,7 @@ A community-driven directory of RSS feeds for shadcn/ui registries. Stay updated
 
 ## The Problem
 
-The shadcn/ui ecosystem has grown significantly, with dozens of community registries offering components, blocks, and utilities
+The shadcn/ui ecosystem has grown significantly, with dozens of community registries offering components, blocks, and utilities. It has become quite difficult to keep track of everyone, find out about updates, and it is quite easy to miss something important.
 
 ## The Solution
 
