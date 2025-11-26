@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Suspense } from "react";
 import { Background } from "@/components/background";
+import { ProductHuntWidget } from "@/components/product-hunt-widget";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -72,6 +73,7 @@ export default function RootLayout({
           >
             <Background />
             <NuqsAdapter>{children}</NuqsAdapter>
+            <ProductHuntWidget />
             <Toaster />
           </ThemeProvider>
         </body>
