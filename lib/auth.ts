@@ -9,10 +9,32 @@ export const auth = betterAuth({
       user: schema.user,
       session: schema.session,
       account: schema.account,
+      verification: schema.verification,
     },
   }),
   emailAndPassword: {
     enabled: true,
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: async ({ user, url, token }, request) => {
+      // TODO: Implement actual email sending
+      // For now, log to console in development
+      console.log(`
+        ========================================
+        Email Verification Required
+        ========================================
+        To: ${user.email}
+        Subject: Verify your email address
+        
+        Click the link to verify your email:
+        ${url}
+        
+        Token: ${token}
+        ========================================
+      `);
+    },
   },
   socialProviders: {
     github: {

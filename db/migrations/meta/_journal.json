@@ -36,6 +36,13 @@
       "when": 1764446500000,
       "tag": "0004_cleanup_auth",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1764448000000,
+      "tag": "0005_add_verification",
+      "breakpoints": true
     }
   ]
 }

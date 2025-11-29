@@ -16,6 +16,7 @@ export const user = sqliteTable("user", {
   emailVerified: integer("email_verified", { mode: "boolean" })
     .notNull()
     .default(false),
+  image: text("image"),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date()),
@@ -59,6 +60,19 @@ export const account = sqliteTable("account", {
   scope: text("scope"),
   idToken: text("id_token"),
   password: text("password"),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});
+
+export const verification = sqliteTable("verification", {
+  id: text("id").primaryKey(),
+  identifier: text("identifier").notNull(),
+  value: text("value").notNull(),
+  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date()),
@@ -124,3 +138,4 @@ export type NewRssItemRecord = typeof rssItems.$inferInsert;
 export type UserRecord = typeof user.$inferSelect;
 export type SessionRecord = typeof session.$inferSelect;
 export type AccountRecord = typeof account.$inferSelect;
+export type VerificationRecord = typeof verification.$inferSelect;
