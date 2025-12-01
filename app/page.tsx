@@ -4,6 +4,7 @@ import { Wifi } from "@/components/animate-ui/icons/wifi";
 import { RegistriesPageContent } from "@/components/registries-page-content";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { WhatsNew } from "@/components/whats-new";
 
 import { collectRssFeed } from "@/lib/data";
 import { UserMenu } from "@/components/auth/user-menu";
@@ -94,6 +95,8 @@ export default async function Home() {
             </Button>
           </div>
         </header>
+
+        <WhatsNew position="bottom-left" />
 
         <RegistriesPageContent registries={registries} />
       </main>
