@@ -2,6 +2,7 @@ import { eq, and, inArray, lte, or } from "drizzle-orm";
 import { db, schema } from "@/db";
 import type { WebhookRecord, RegistryRecord, RssItemRecord } from "@/db/schema";
 import { getWebhooksForRegistry, updateWebhookStatus } from "./webhooks";
+import { RssItem } from "@/types";
 
 // ============================================
 // Types
@@ -256,7 +257,7 @@ export async function sendTestWebhook(
  */
 export async function notifyRegistryUpdate(
   registry: RegistryRecord,
-  newItems?: RssItemRecord[]
+  newItems?: RssItem[]
 ): Promise<DeliveryResult[]> {
   // Get all active webhooks subscribed to this registry
   const webhooks = await getWebhooksForRegistry(registry.id);
@@ -279,14 +280,7 @@ export async function notifyRegistryUpdate(
         url: registry.url,
         homepage: registry.homepage,
       },
-      ...(newItems?.length && {
-        items: newItems.map((item) => ({
-          title: item.title,
-          link: item.link,
-          pubDate: item.pubDate.toISOString(),
-          description: item.description || undefined,
-        })),
-      }),
+      items: newItems,
     },
   };
 

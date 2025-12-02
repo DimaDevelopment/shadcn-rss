@@ -2,9 +2,7 @@ name: Sync Database
 
 on:
   schedule:
-    # Sync registries daily at midnight UTC
-    - cron: "0 0 * * *"
-    # Sync RSS feeds every 15 minutes
+    # Sync RSS feeds every 5 minutes
     - cron: "*/5 * * * *"
   workflow_dispatch: # Allow manual trigger
 
@@ -12,18 +10,7 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Determine sync type
-        id: sync-type
-        run: |
-          # Check which cron triggered this (or manual)
-          if [ "${{ github.event.schedule }}" = "0 0 * * *" ]; then
-            echo "type=registries" >> $GITHUB_OUTPUT
-          else
-            echo "type=rss" >> $GITHUB_OUTPUT
-          fi
-
       - name: Sync Registries
-        if: steps.sync-type.outputs.type == 'registries' || github.event_name == 'workflow_dispatch'
         run: |
           curl -X GET "${{ secrets.SITE_URL }}/api/cron/registries" \
             --fail --silent --show-error
