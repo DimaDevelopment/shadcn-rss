@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { ExternalLink, Copy, Bookmark } from "lucide-react";
+import { ExternalLink, Copy, Bookmark, Pin } from "lucide-react";
 
 import { Registry } from "@/types";
 import { cn } from "@/lib/utils";
@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 
 import { RegistryUpdate } from "./registry-update";
 import { WithoutRss } from "./without-rss";
+import { PinRegistry } from "./ui/pin-registry";
 
 interface RegistryCardProps {
   registry: Registry;
@@ -52,19 +53,25 @@ export const RegistryCard: React.FC<RegistryCardProps> = ({
             {registry.name}
           </CardTitle>
         </div>
-        {registry.rssUrl && onToggle && (
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className={cn(
-              "h-8 w-8 rounded-full shrink-0 text-muted-foreground hover:text-foreground",
-              isSelected && "text-primary hover:text-primary"
-            )}
-            onClick={handleToggle}
-          >
-            <Bookmark className={cn("size-4", isSelected && "fill-current")} />
-          </Button>
-        )}
+        <div className="flex items-center gap-1 shrink-0">
+          <PinRegistry registry={registry} />
+          {registry.rssUrl && onToggle && (
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className={cn(
+                "h-8 w-8 rounded-full text-muted-foreground hover:text-foreground",
+                isSelected && "text-primary hover:text-primary"
+              )}
+              onClick={handleToggle}
+              title={isSelected ? "Deselect for export" : "Select for export"}
+            >
+              <Bookmark
+                className={cn("size-4", isSelected && "fill-current")}
+              />
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="flex-1 p-4 pt-1">
         {registry.description && (

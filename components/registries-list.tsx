@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { motion } from "motion/react";
 import { Search, X } from "lucide-react";
 
 import { Registry } from "@/types";
 import { useRegistryState } from "@/hooks/use-registry-state";
+import { usePinnedRegistries } from "@/hooks/use-pinned-registries";
 
 import { Field } from "@/components/ui/field";
 import {
@@ -27,11 +28,11 @@ export const RegistriesList: React.FC<RegistriesListProps> = ({
 }) => {
   const {
     query,
-    setQuery,
     selection,
-    setSelection,
     filteredRegistries,
     selectedRegistries,
+    setQuery,
+    setSelection,
     handleToggleSelection,
   } = useRegistryState(registries);
 
@@ -71,6 +72,7 @@ export const RegistriesList: React.FC<RegistriesListProps> = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.05 }}
+            layout
           >
             <RegistryCard
               registry={registry}

@@ -1,5 +1,6 @@
 //
 export type Registry = {
+  id: number;
   name: string;
   homepage: string;
   url: string;

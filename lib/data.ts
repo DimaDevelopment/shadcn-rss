@@ -20,6 +20,7 @@ function toRegistry(
   const latestItems = filterRecentItems(rssItems);
 
   return {
+    id: dbRegistry.id,
     name: dbRegistry.name,
     homepage: dbRegistry.homepage,
     url: dbRegistry.url,

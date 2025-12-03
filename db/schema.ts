@@ -197,11 +197,38 @@ export const webhookDeliveries = sqliteTable("webhook_deliveries", {
     .$defaultFn(() => new Date()),
 });
 
+// ============================================
+// Pinned Registries Schema
+// ============================================
+
+export const pinnedRegistries = sqliteTable(
+  "pinned_registries",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    registryId: integer("registry_id")
+      .notNull()
+      .references(() => registries.id, { onDelete: "cascade" }),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    uniqueIndex("pinned_registries_user_registry_idx").on(
+      table.userId,
+      table.registryId
+    ),
+  ]
+);
+
 // Type exports for use in the application
 export type RegistryRecord = typeof registries.$inferSelect;
 export type NewRegistryRecord = typeof registries.$inferInsert;
 export type RssItemRecord = typeof rssItems.$inferSelect;
 export type NewRssItemRecord = typeof rssItems.$inferInsert;
+export type PinnedRegistryRecord = typeof pinnedRegistries.$inferSelect;
 
 // Webhook type exports
 export type WebhookRecord = typeof webhooks.$inferSelect;
