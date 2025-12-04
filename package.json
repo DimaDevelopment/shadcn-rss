@@ -14,6 +14,7 @@
     "db:sync": "tsx scripts/sync.ts",
     "db:studio": "drizzle-kit studio",
     "registry": "tsx scripts/registry.ts",
+    "export:rss": "tsx scripts/export-rss-feeds.ts",
     "test:webhook": "tsx scripts/test-webhook.ts",
     "simulate:update": "tsx scripts/simulate-registry-update.ts",
     "add:items": "tsx scripts/add-registry-items.ts"
