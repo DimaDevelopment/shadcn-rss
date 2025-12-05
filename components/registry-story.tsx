@@ -60,15 +60,22 @@ export function RegistryStory({ registry }: RegistryStoryProps) {
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        className="h-7 w-7 text-muted-foreground hover:bg-pink-100 hover:text-pink-600 dark:hover:bg-pink-900/30 dark:hover:text-pink-400 transition-colors"
-        onClick={handleOpen}
-        title="View 2025 Story"
+      <motion.div
+        whileHover={{ scale: 1.1, rotate: 3 }}
+        whileTap={{ scale: 0.94 }}
+        animate={{ scale: [1, 1.06, 1], rotate: [0, 1.5, 0] }}
+        transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 2 }}
       >
-        <PlayCircle className="size-4" />
-      </Button>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="h-8 w-8 rounded-full text-pink-500 hover:text-pink-600 hover:bg-pink-100 dark:hover:bg-pink-900/30 dark:hover:text-pink-300 shadow-sm"
+          onClick={handleOpen}
+          title="View 2025 Story"
+        >
+          <PlayCircle className="size-4" />
+        </Button>
+      </motion.div>
 
       {isOpen && (
         <StoryOverlay registry={registry} onClose={() => setIsOpen(false)} />

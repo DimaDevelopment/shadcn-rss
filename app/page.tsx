@@ -3,12 +3,14 @@ import Link from "next/link";
 import { Wifi } from "@/components/animate-ui/icons/wifi";
 import { RegistriesPageContent } from "@/components/registries-page-content";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { WhatsNew } from "@/components/whats-new";
 
 import { collectRssFeed } from "@/lib/data";
 import { UserMenu } from "@/components/auth/user-menu";
 import { AnimateIcon } from "@/components/animate-ui/icons/icon";
+import { Wrapped } from "@/components/wrapped";
 
 export default async function Home() {
   const registries = await collectRssFeed();
@@ -91,6 +93,7 @@ export default async function Home() {
                 KapishDima
               </Link>
             </Button>
+            <Wrapped />
           </div>
         </header>
 

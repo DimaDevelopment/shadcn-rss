@@ -95,7 +95,7 @@ export const RegistryCard: React.FC<RegistryCardProps> = ({
             )}
           </div>
 
-          <div className="flex items-center gap-1 ml-auto">
+          <div className="flex items-center  ml-auto">
             <RegistryStory registry={registry} />
             {registry.rssUrl && (
               <Button
