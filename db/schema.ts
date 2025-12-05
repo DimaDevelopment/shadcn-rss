@@ -129,6 +129,36 @@ export const rssItems = sqliteTable("rss_items", {
     .$defaultFn(() => new Date()),
 });
 
+export const registryStories = sqliteTable(
+  "registry_stories",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    registryId: integer("registry_id")
+      .notNull()
+      .references(() => registries.id, { onDelete: "cascade" }),
+    year: integer("year").notNull(),
+    firstItemTitle: text("first_item_title"),
+    firstItemDate: integer("first_item_date", { mode: "timestamp" }),
+    componentCount: integer("component_count").notNull().default(0),
+    blockCount: integer("block_count").notNull().default(0),
+    peakMonth: text("peak_month").notNull(),
+    avgMonthlyPubs: integer("avg_monthly_pubs").notNull().default(0),
+    totalItems: integer("total_items").notNull().default(0),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    uniqueIndex("registry_stories_registry_year_idx").on(
+      table.registryId,
+      table.year
+    ),
+  ]
+);
+
 // ============================================
 // Webhook Schema
 // ============================================
@@ -230,6 +260,8 @@ export type NewRegistryRecord = typeof registries.$inferInsert;
 export type RssItemRecord = typeof rssItems.$inferSelect;
 export type NewRssItemRecord = typeof rssItems.$inferInsert;
 export type PinnedRegistryRecord = typeof pinnedRegistries.$inferSelect;
+export type RegistryStoryRecord = typeof registryStories.$inferSelect;
+export type NewRegistryStoryRecord = typeof registryStories.$inferInsert;
 
 // Webhook type exports
 export type WebhookRecord = typeof webhooks.$inferSelect;

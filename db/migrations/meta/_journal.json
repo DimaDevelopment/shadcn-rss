@@ -50,6 +50,13 @@
       "when": 1764450013701,
       "tag": "0006_sleepy_sentinel",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1764892813374,
+      "tag": "0007_sparkling_starfox",
+      "breakpoints": true
     }
   ]
 }

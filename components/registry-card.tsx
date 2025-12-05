@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { RegistryUpdate } from "./registry-update";
 import { WithoutRss } from "./without-rss";
 import { PinRegistry } from "./ui/pin-registry";
+import { RegistryStory } from "./registry-story";
 
 interface RegistryCardProps {
   registry: Registry;
@@ -95,6 +96,7 @@ export const RegistryCard: React.FC<RegistryCardProps> = ({
           </div>
 
           <div className="flex items-center gap-1 ml-auto">
+            <RegistryStory registry={registry} />
             {registry.rssUrl && (
               <Button
                 variant="ghost"
