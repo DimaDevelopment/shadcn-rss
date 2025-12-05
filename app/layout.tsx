@@ -7,9 +7,9 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Suspense } from "react";
 import { Background } from "@/components/background";
-import { ProductHuntWidget } from "@/components/product-hunt-widget";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { KofiWidget } from "@/components/KofiWidget";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -73,7 +73,7 @@ export default function RootLayout({
           >
             <Background />
             <NuqsAdapter>{children}</NuqsAdapter>
-            <ProductHuntWidget />
+            <KofiWidget />
             <Toaster />
           </ThemeProvider>
         </body>
