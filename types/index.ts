@@ -1,4 +1,15 @@
 //
+export type RegistryStoryStats = {
+  year: number;
+  firstItemTitle: string | null;
+  firstItemDate: Date | null;
+  componentCount: number;
+  blockCount: number;
+  peakMonth: string;
+  avgMonthlyPubs: number;
+  totalItems: number;
+};
+
 export type Registry = {
   id: number;
   name: string;
@@ -12,6 +23,7 @@ export type Registry = {
   rssUrl?: string | null;
   latestItems?: RssItem[] | null;
   updatedAt?: Date | null;
+  story?: RegistryStoryStats | null;
 };
 
 export type Feed = {

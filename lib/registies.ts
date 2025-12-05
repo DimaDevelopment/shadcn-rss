@@ -40,7 +40,8 @@ function filterRecentItems(
  */
 function toRegistry(
   dbRegistry: typeof schema.registries.$inferSelect,
-  rssItems: (typeof schema.rssItems.$inferSelect)[]
+  rssItems: (typeof schema.rssItems.$inferSelect)[],
+  story?: typeof schema.registryStories.$inferSelect | null
 ): Registry {
   const latestItems = filterRecentItems(rssItems);
 
@@ -67,6 +68,18 @@ function toRegistry(
     rssUrl: dbRegistry.rssUrl,
     latestItems,
     updatedAt: dbRegistry.updatedAt,
+    story: story
+      ? {
+          year: story.year,
+          firstItemTitle: story.firstItemTitle,
+          firstItemDate: story.firstItemDate,
+          componentCount: story.componentCount,
+          blockCount: story.blockCount,
+          peakMonth: story.peakMonth,
+          avgMonthlyPubs: story.avgMonthlyPubs,
+          totalItems: story.totalItems,
+        }
+      : null,
   };
 }
 
@@ -87,7 +100,18 @@ export async function getRegistries(): Promise<Registry[]> {
         .where(eq(schema.rssItems.registryId, dbRegistry.id))
         .orderBy(desc(schema.rssItems.pubDate));
 
-      return toRegistry(dbRegistry, rssItems);
+      const stories = await db
+        .select()
+        .from(schema.registryStories)
+        .where(
+          and(
+            eq(schema.registryStories.registryId, dbRegistry.id),
+            eq(schema.registryStories.year, 2025)
+          )
+        )
+        .limit(1);
+
+      return toRegistry(dbRegistry, rssItems, stories[0]);
     })
   );
 
@@ -116,7 +140,18 @@ export async function getRegistriesByIds(ids: number[]): Promise<Registry[]> {
         .where(eq(schema.rssItems.registryId, dbRegistry.id))
         .orderBy(desc(schema.rssItems.pubDate));
 
-      return toRegistry(dbRegistry, rssItems);
+      const stories = await db
+        .select()
+        .from(schema.registryStories)
+        .where(
+          and(
+            eq(schema.registryStories.registryId, dbRegistry.id),
+            eq(schema.registryStories.year, 2025)
+          )
+        )
+        .limit(1);
+
+      return toRegistry(dbRegistry, rssItems, stories[0]);
     })
   );
 
