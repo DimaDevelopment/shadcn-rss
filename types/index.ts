@@ -17,6 +17,7 @@ export type Registry = {
   url: string;
   description: string;
   logo: string;
+  utmSource?: string | null;
   searchKeywords?: string[];
   hasFeed?: boolean;
   feed?: RssChannel | null;

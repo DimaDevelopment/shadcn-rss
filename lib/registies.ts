@@ -50,6 +50,7 @@ function toRegistry(
     name: dbRegistry.name,
     homepage: dbRegistry.homepage,
     url: dbRegistry.url,
+    utmSource: dbRegistry.utmSource,
     description: dbRegistry.description,
     logo: dbRegistry.logo || "",
     searchKeywords: [

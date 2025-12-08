@@ -40,6 +40,24 @@ export const RegistryCard: React.FC<RegistryCardProps> = ({
     onToggle
   );
 
+  const visitUrl = React.useMemo(() => {
+    const baseUrl = registry.homepage ?? registry.url;
+
+    if (!baseUrl) return null;
+    if (!registry.utmSource) return baseUrl;
+
+    try {
+      const url = new URL(baseUrl);
+      url.searchParams.set("utm_source", registry.utmSource);
+      return url.toString();
+    } catch {
+      const separator = baseUrl.includes("?") ? "&" : "?";
+      return `${baseUrl}${separator}utm_source=${encodeURIComponent(
+        registry.utmSource
+      )}`;
+    }
+  }, [registry.homepage, registry.url, registry.utmSource]);
+
   return (
     <Card
       className={cn(
@@ -117,7 +135,7 @@ export const RegistryCard: React.FC<RegistryCardProps> = ({
                 asChild
               >
                 <Link
-                  href={registry.homepage ?? registry.url}
+                  href={visitUrl ?? registry.homepage ?? registry.url}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

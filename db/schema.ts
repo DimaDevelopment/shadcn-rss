@@ -93,6 +93,7 @@ export const registries = sqliteTable(
     name: text("name").notNull(),
     homepage: text("homepage").notNull(),
     url: text("url").notNull().unique(),
+    utmSource: text("utm_source"),
     description: text("description").notNull(),
     logo: text("logo").default(""),
     // Status
