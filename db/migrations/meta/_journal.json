@@ -64,6 +64,13 @@
       "when": 1765180800000,
       "tag": "0008_add_registry_utm_source",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1765831334170,
+      "tag": "0009_registry_data_model",
+      "breakpoints": true
     }
   ]
 }
