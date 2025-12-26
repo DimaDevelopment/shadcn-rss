@@ -1,11 +1,15 @@
-import { prisma } from "@shadcnrss/db";
+import { prisma, Registry as RegistryDBModel } from "@shadcnrss/db";
 import { progress } from "@shadcnrss/tui";
 
 import { RegistryItem, Registry } from "./schemas.js";
 import { ensureRegistryFetchable, fetchRegistryItems } from "./api.js";
 
 import registries from "./data/registries.js";
-import { fetchRepoInfo } from "./github.js";
+import {
+  fetchItemCommits,
+  fetchRepoInfo,
+  getRepoOwnerAndName,
+} from "./github.js";
 
 const toRegistryItemInsertValues = (item: RegistryItem) => {
   return {
@@ -55,13 +59,32 @@ const onRegistryItemsFetched = (registryId: number, items: RegistryItem[]) => {
   if (!items.length) return;
 
   return Promise.all(
-    items.map((item) =>
-      prisma.registryItem.upsert({
+    items.map(async (item) => {
+      const registryItem = await prisma.registryItem.upsert({
         where: { registryId_name: { registryId, name: item.name } },
         create: { ...toRegistryItemInsertValues(item), registryId },
         update: toRegistryItemInsertValues(item),
-      })
-    )
+      });
+
+      item.files?.map(async (file) => {
+        await prisma.registryItemFile.upsert({
+          where: {
+            registryId_path: { registryId, path: file.path },
+          },
+          create: {
+            registryId,
+            itemId: registryItem.id,
+            path: file.path,
+            type: file.type,
+          },
+          update: {
+            type: file.type,
+          },
+        });
+      });
+
+      return registryItem;
+    })
   );
 };
 
@@ -81,6 +104,52 @@ const storeInvalidRegistry = (registry: Registry) => {
   });
 };
 
+const onUpdateRegistryState = async (registry: RegistryDBModel) => {
+  if (!registry.repo) return null;
+
+  const repo = getRepoOwnerAndName(registry.repo);
+
+  if (!repo) return null;
+
+  const files = await prisma.registryItemFile.findMany({
+    where: { registryId: registry.id },
+  });
+
+  await Promise.all(
+    files
+      .filter((f) => f.path)
+      .map(async (file) => {
+        const commits = await fetchItemCommits(
+          repo.owner,
+          repo.name,
+          file.path!
+        );
+
+        const commitWithItem = commits.map((commit) => ({
+          ...commit,
+          itemId: file.itemId,
+        }));
+
+        await prisma.registryItemCommits.createMany({ data: commitWithItem });
+      })
+  );
+};
+
+export async function updateRegistriesState() {
+  const spinner = progress();
+  spinner.start("Starting registries state update...");
+
+  const registries = await prisma.registry.findMany();
+
+  for (const registry of registries) {
+    await onUpdateRegistryState(registry);
+
+    spinner.step(`Updated registry state: ${registry.name}`);
+  }
+
+  spinner.succeed("Registries state update completed.");
+}
+
 export async function syncRegistry() {
   const spinner = progress();
   spinner.start("Starting registry sync...");
@@ -97,13 +166,13 @@ export async function syncRegistry() {
     const savedRegistry = await onRegistriesFetched(registry);
     spinner.step(`Fetched registry: ${registry.name}`);
 
-    // const items = await fetchRegistryItems(registry);
+    const items = await fetchRegistryItems(registry);
 
-    // if (!savedRegistry) continue;
+    if (!savedRegistry) continue;
 
-    // onRegistryItemsFetched(savedRegistry.id, items);
+    onRegistryItemsFetched(savedRegistry.id, items);
 
-    // spinner.step(`Synced ${items.length} items for registry: ${registry.name}`);
+    spinner.step(`Synced ${items.length} items for registry: ${registry.name}`);
   }
 
   spinner.succeed("Registry sync completed.");

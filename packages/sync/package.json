@@ -16,6 +16,7 @@
     "@shadcnrss/logger": "*",
     "@shadcnrss/tui": "*",
     "@shadcnrss/typescript-config": "*",
+    "date-fns": "^4.1.0",
     "zod": "^4.2.1"
   }
 }

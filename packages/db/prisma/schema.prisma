@@ -15,14 +15,15 @@ datasource db {
 
 model Registry {
   id          Int     @id @default(autoincrement())
-  name        String? @unique
+  name        String @unique
   description String?
   homepage    String?
-  url         String?
+  url         String
   repo        String?
 
+  files    RegistryItemFile[]
   items RegistryItem[]
-  repos RegistryRepo[]
+  repos RegistryRepo?
 
   @@map("registries")
 }
@@ -36,8 +37,9 @@ model RegistryItem {
   registryDeps String?       @map("registry_deps")
   deps         String?
   type         String? 
-
+  
   registry Registry? @relation(fields: [registryId], references: [id])
+  registryItemCommits RegistryItemCommits[]
   files    RegistryItemFile[]
   states   RegistryItemState[]
   diffs    RegistryItemDiff[]
@@ -48,23 +50,25 @@ model RegistryItem {
 
 model RegistryItemFile {
   id      Int           @id @default(autoincrement())
+  registryId Int?       @map("registry_id")
   itemId  Int?          @map("item_id")
   path    String?
-  content String?
   type    String? 
 
   item RegistryItem? @relation(fields: [itemId], references: [id])
+  registry Registry? @relation(fields: [registryId], references: [id])
 
+  @@unique([registryId, path])
   @@map("registries_items_files")
 }
 
 model RegistryRepo {
   id         Int     @id @default(autoincrement())
   registryId Int?    @map("registry_id") @unique
-  repoId     Int?   @map("repo_id")
-  url        String?
-  owner      String?
-  name       String? @map("repo")
+  repoId     Int   @map("repo_id")
+  url        String
+  owner      String
+  name       String @map("repo")
   stars      Int?
   forks      Int?
   issues     Int?
@@ -80,6 +84,7 @@ model RegistryRepo {
 
   registry Registry? @relation(fields: [registryId], references: [id])
 
+  
   @@map("registries_repos")
 }
 
@@ -114,4 +119,17 @@ model InvalidRegistry {
   repo        String?
 
   @@map("invalid_registries")
+}
+
+model RegistryItemCommits {
+  id        Int      @id @default(autoincrement())
+  itemId    Int?     @map("item_id")
+  commitSha String?  @map("commit_sha")
+  message   String?
+  url       String?
+  date   DateTime?
+
+  item RegistryItem? @relation(fields: [itemId], references: [id])
+
+  @@map("registry_item_commits")
 }

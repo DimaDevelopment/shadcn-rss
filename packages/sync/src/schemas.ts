@@ -61,8 +61,16 @@ export const RegistryRepoMetadataSchema = z.object({
   license: z.string().optional(),
 });
 
+export const RegistryItemCommitSchema = z.object({
+  commitSha: z.string(),
+  message: z.string(),
+  url: z.string(),
+  date: z.date(),
+});
+
 export type RegistryRepoMetadata = z.infer<typeof RegistryRepoMetadataSchema>;
 export type Registry = z.infer<typeof RegistrySchema>;
 export type RegistryItemType = z.infer<typeof RegistryItemTypeEnum>;
 export type RegistryItemFile = z.infer<typeof RegistryItemFileSchema>;
 export type RegistryItem = z.infer<typeof RegistryItemSchema>;
+export type RegistryItemCommit = z.infer<typeof RegistryItemCommitSchema>;

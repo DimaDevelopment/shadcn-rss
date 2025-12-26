@@ -9,6 +9,7 @@
     "@shadcnrss/sync": "*",
     "@shadcnrss/db": "*",
     "@shadcnrss/typescript-config": "*",
+    "@shadcnrss/registries": "*",
     "elysia": "latest"
   },
   "devDependencies": {
