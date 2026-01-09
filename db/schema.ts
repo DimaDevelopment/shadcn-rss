@@ -3,6 +3,7 @@ import {
   text,
   integer,
   uniqueIndex,
+  index,
 } from "drizzle-orm/sqlite-core";
 
 // ============================================
@@ -113,6 +114,122 @@ export const registries = sqliteTable(
       .$defaultFn(() => new Date()),
   },
   (table) => [uniqueIndex("registries_url_idx").on(table.url)]
+);
+
+export const registryComponents = sqliteTable(
+  "registry_components",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    registryId: integer("registry_id")
+      .notNull()
+      .references(() => registries.id, { onDelete: "cascade" }),
+    slug: text("slug").notNull(),
+    name: text("name").notNull(),
+    kind: text("kind").notNull().default("component"),
+    status: text("status").notNull().default("active"),
+    description: text("description"),
+    sourcePath: text("source_path"),
+    sourceUrl: text("source_url"),
+    checksum: text("checksum"),
+    metadata: text("metadata"),
+    firstSeenAt: integer("first_seen_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    lastSeenAt: integer("last_seen_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    uniqueIndex("registry_components_registry_slug_idx").on(
+      table.registryId,
+      table.slug
+    ),
+  ]
+);
+
+export const componentSnapshots = sqliteTable(
+  "component_snapshots",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    componentId: integer("component_id")
+      .notNull()
+      .references(() => registryComponents.id, { onDelete: "cascade" }),
+    registryId: integer("registry_id")
+      .notNull()
+      .references(() => registries.id, { onDelete: "cascade" }),
+    checksum: text("checksum").notNull(),
+    versionLabel: text("version_label"),
+    sourceCommit: text("source_commit"),
+    sourceTag: text("source_tag"),
+    sourceUrl: text("source_url"),
+    files: text("files"),
+    metadata: text("metadata"),
+    capturedAt: integer("captured_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    uniqueIndex("component_snapshots_component_checksum_idx").on(
+      table.componentId,
+      table.checksum
+    ),
+  ]
+);
+
+export const componentChanges = sqliteTable(
+  "component_changes",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    registryId: integer("registry_id")
+      .notNull()
+      .references(() => registries.id, { onDelete: "cascade" }),
+    componentId: integer("component_id")
+      .notNull()
+      .references(() => registryComponents.id, { onDelete: "cascade" }),
+    changeType: text("change_type").notNull(),
+    severity: text("severity").notNull().default("info"),
+    isBreaking: integer("is_breaking", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    prevSnapshotId: integer("prev_snapshot_id").references(
+      () => componentSnapshots.id,
+      { onDelete: "set null" }
+    ),
+    nextSnapshotId: integer("next_snapshot_id").references(
+      () => componentSnapshots.id,
+      { onDelete: "set null" }
+    ),
+    summary: text("summary").notNull(),
+    description: text("description"),
+    diff: text("diff"),
+    metadata: text("metadata"),
+    detectedAt: integer("detected_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    publishedAt: integer("published_at", { mode: "timestamp" }),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    index("component_changes_registry_detected_idx").on(
+      table.registryId,
+      table.detectedAt
+    ),
+    index("component_changes_component_detected_idx").on(
+      table.componentId,
+      table.detectedAt
+    ),
+  ]
 );
 
 export const rssItems = sqliteTable("rss_items", {
@@ -258,6 +375,12 @@ export const pinnedRegistries = sqliteTable(
 // Type exports for use in the application
 export type RegistryRecord = typeof registries.$inferSelect;
 export type NewRegistryRecord = typeof registries.$inferInsert;
+export type RegistryComponentRecord = typeof registryComponents.$inferSelect;
+export type NewRegistryComponentRecord = typeof registryComponents.$inferInsert;
+export type ComponentSnapshotRecord = typeof componentSnapshots.$inferSelect;
+export type NewComponentSnapshotRecord = typeof componentSnapshots.$inferInsert;
+export type ComponentChangeRecord = typeof componentChanges.$inferSelect;
+export type NewComponentChangeRecord = typeof componentChanges.$inferInsert;
 export type RssItemRecord = typeof rssItems.$inferSelect;
 export type NewRssItemRecord = typeof rssItems.$inferInsert;
 export type PinnedRegistryRecord = typeof pinnedRegistries.$inferSelect;
